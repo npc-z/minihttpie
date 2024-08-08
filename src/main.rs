@@ -43,7 +43,7 @@ struct Post {
     body: Vec<KvPair>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct KvPair {
     k: String,
     v: String,
@@ -141,4 +141,36 @@ async fn main() -> Result<()> {
     };
 
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_url() {
+        assert!(parse_url("abc").is_err());
+        assert!(parse_url("http://abc.xyz").is_ok());
+        assert!(parse_url("https://goog.job").is_ok());
+    }
+    #[test]
+    fn test_parse_kv_pair() {
+        assert!(parse_kv_pair("a").is_err());
+
+        assert_eq!(
+            parse_kv_pair("name=bob").unwrap(),
+            KvPair {
+                k: "name".into(),
+                v: "bob".into()
+            }
+        );
+
+        assert_eq!(
+            parse_kv_pair("age=").unwrap(),
+            KvPair {
+                k: "age".into(),
+                v: "".into()
+            }
+        );
+    }
 }
